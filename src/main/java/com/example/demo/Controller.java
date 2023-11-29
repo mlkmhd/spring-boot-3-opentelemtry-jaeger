@@ -42,7 +42,7 @@ public class Controller {
 
     public void doNothingButSleepForSomeTime() {
         try {
-            int sleepTime = random.nextInt(2, 5);
+            int sleepTime = random.nextInt(1, 2);
             logger.info("sleeping for " + sleepTime + " seconds");
             Thread.sleep(sleepTime * 1000);
         } catch (InterruptedException e) {

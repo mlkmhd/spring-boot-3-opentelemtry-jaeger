@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-spring-boot
+  labels:
+    app: sample-spring-boot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sample-spring-boot
+  template:
+    metadata:
+      labels:
+        app: sample-spring-boot
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+      serviceAccountName: default
+      containers:
+
+        - name: app1
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+          image: mallakimahdi/sample-spring-boot:1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 256m
+              memory: 128Mi
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-vol-1
+
+        - name: app2
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+          image: mallakimahdi/sample-spring-boot:1
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: SERVER_PORT
+            value: "8090"
+          ports:
+            - name: http
+              containerPort: 8090
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 256m
+              memory: 128Mi
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-vol-2
+
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      volumes:
+        - name: tmp-vol-1
+          emptyDir: {}
+        - name: tmp-vol-2
+          emptyDir: {}
